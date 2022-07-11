@@ -8,19 +8,22 @@ import {
   Routes,
   Route,
 } from 'react-router-dom';
+import HouseContextProvider from './components/HouseContext';
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <div className='max-w-[1440px] mx-auto bg-white'>
-        <Header />
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/property/:id' element={<PropertyDetails />} />
-        </Routes>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <HouseContextProvider>
+      <BrowserRouter>
+        <div className='max-w-[1440px] mx-auto bg-white'>
+          <Header />
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/property/:id' element={<PropertyDetails />} />
+          </Routes>
+          <Footer />
+        </div>
+      </BrowserRouter>
+    </HouseContextProvider>
   );
 };
 

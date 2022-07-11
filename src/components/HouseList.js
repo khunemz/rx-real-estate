@@ -6,7 +6,6 @@ import House from './House';
 
 const HouseList = () => {
   const { houses, loading } = useContext(HouseContext);
-  console.log('houses : ', houses);
   return (
     <section className='mb-20'>
       <div className='container mx-auto'>

@@ -23,7 +23,6 @@ export const HouseContextProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    
     const allProperties = houses.map((house, index) => {
       return house.type;
     });
@@ -33,6 +32,11 @@ export const HouseContextProvider = ({ children }) => {
   }, [])
   
 
+
+  const handleClick = (value) => {
+    console.log('search value : ', value);
+  }
+
   return <HouseContext.Provider value={{
     houses, setHouses,
     country, setCountry, 
@@ -40,7 +44,8 @@ export const HouseContextProvider = ({ children }) => {
     property, setProperty, 
     properties, setProperties, 
     price, setPrice, 
-    loading, setLoading
+    loading, setLoading,
+    handleClick,
   }}>
     { children }
   </HouseContext.Provider>;

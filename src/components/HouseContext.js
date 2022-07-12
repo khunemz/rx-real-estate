@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext} from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 
 import { housesData } from '../data'
 
@@ -14,7 +14,7 @@ export const HouseContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const allCountries = houses.map((item, index) => {
+    const allCountries = housesData.map((item, index) => {
       return item.country;
     });
     const unique = ['Location (any)', ...new Set(allCountries)]
@@ -23,14 +23,14 @@ export const HouseContextProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    const allProperties = houses.map((house, index) => {
+    const allProperties = housesData.map((house, index) => {
       return house.type;
     });
     const unique = ['Select your place (any)', ...new Set(allProperties)]
     setProperties(unique);
     return () => { }
   }, [])
-  
+
 
 
   const handleClick = (value) => {
@@ -40,38 +40,47 @@ export const HouseContextProvider = ({ children }) => {
 
     const isDefaultCountry = isDefault(country);
     const isDefaultProperty = isDefault(property);
-    if(isDefaultCountry || isDefaultProperty) {
-      return;
-    }
+    const isDefaultPrice = isDefault(price);
     const priceLower = parseInt(price.split('-')[0]);
     const priceUpper = parseInt(price.split('-')[1]);
-
-    console.log('price lower : ', priceLower);
-    console.log('price upper : ', priceUpper);
-    console.log('property : ', property);
-
-    const newHouseList = housesData.filter(item => {
+    let newHouseList = housesData.filter(item => {
       const housePrice = parseInt(item.price);
-      if(item.country === country && item.type === property && (housePrice >= priceLower && housePrice <= priceUpper)) {
+      if (item.country === country && item.type === property && (housePrice >= priceLower && housePrice <= priceUpper)) {
         return item;
       }
     })
+    // possible bug here
+    if (isDefaultCountry && isDefaultProperty && isDefaultPrice) {
+      setHouses(housesData);
+      return;
+    } else if(!isDefaultCountry && isDefaultProperty && isDefaultPrice) {
+      newHouseList = housesData.filter(house => house.country  === country)
+    } else if(!isDefaultProperty && !isDefaultCountry && isDefaultPrice) {
+      newHouseList = housesData.filter(house => house.type  === property && house.country  === country)
+    } else if(!isDefaultProperty && isDefaultCountry && isDefaultPrice) {
+      newHouseList = housesData.filter(house => house.type  === property)
+    } else if (!isDefaultPrice && isDefaultProperty && isDefaultCountry) {
+      newHouseList = housesData.filter(house => (parseInt(house.price) >= priceLower && parseInt(house.price) <= priceUpper))
+    } else if (!isDefaultPrice && !isDefaultProperty && isDefaultCountry) {
+      newHouseList = housesData.filter(house => house.country  === country && (parseInt(house.price) >= priceLower && parseInt(house.price) <= priceUpper))
+    } else if (!isDefaultPrice && isDefaultProperty && !isDefaultCountry) {
+      newHouseList = housesData.filter(house => house.type  === property && (parseInt(house.price) >= priceLower && parseInt(house.price) <= priceUpper))
+    }
 
-    console.log('new house list : ', newHouseList);
     setHouses(newHouseList);
   }
 
   return <HouseContext.Provider value={{
     houses, setHouses,
-    country, setCountry, 
-    countries, setCountries, 
-    property, setProperty, 
-    properties, setProperties, 
-    price, setPrice, 
+    country, setCountry,
+    countries, setCountries,
+    property, setProperty,
+    properties, setProperties,
+    price, setPrice,
     loading, setLoading,
     handleClick,
   }}>
-    { children }
+    {children}
   </HouseContext.Provider>;
 };
 

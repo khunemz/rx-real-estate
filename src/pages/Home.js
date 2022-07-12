@@ -1,8 +1,8 @@
-import React from 'react';
-
-// import components
-import HouseList from '../components/HouseList';
-import Banner from '../components/Banner';
+import React, { useContext } from 'react';
+import { HouseContext } from '../components/HouseContext';
+import Banner from './../components/Banner'
+import HouseList from '../components/HouseList'
+import House from '../components/House'
 
 const Home = () => {
   return (

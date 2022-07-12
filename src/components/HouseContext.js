@@ -1,134 +1,89 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 
-// import data
-import { housesData } from '../data';
+import { housesData } from '../data'
 
-// create context
 export const HouseContext = createContext();
 
-// provider
-const HouseContextProvider = ({ children }) => {
-  const [houses, setHouses] = useState(housesData);
-  const [country, setCountry] = useState('Location (any)');
-  const [countries, setCountries] = useState([]);
-  const [property, setProperty] = useState('Property type (any)');
-  const [properties, setProperties] = useState([]);
-  const [price, setPrice] = useState('Price range (any)');
-  const [loading, setLoading] = useState(false);
+export const HouseContextProvider = ({ children }) => {
+  const [houses, setHouses] = useState(housesData)
+  const [country, setCountry] = useState('Location (any)')
+  const [countries, setCountries] = useState([])
+  const [property, setProperty] = useState('Property type (any)')
+  const [properties, setProperties] = useState()
+  const [price, setPrice] = useState('Price (any)')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    // return all countries
-    const allCountries = houses.map((house) => {
-      return house.country;
+    const allCountries = housesData.map((item, index) => {
+      return item.country;
     });
-
-    // remove duplicates
-    const uniqueCountries = ['Location (any)', ...new Set(allCountries)];
-
-    // set countries state
-    setCountries(uniqueCountries);
-  }, []);
+    const unique = ['Location (any)', ...new Set(allCountries)]
+    setCountries(unique);
+    return () => { }
+  }, [])
 
   useEffect(() => {
-    // return only countries
-    const allProperties = houses.map((house) => {
+    const allProperties = housesData.map((house, index) => {
       return house.type;
     });
+    const unique = ['Select your place (any)', ...new Set(allProperties)]
+    setProperties(unique);
+    return () => { }
+  }, [])
 
-    // remove duplicates
-    const uniqueProperties = ['Property type (any)', ...new Set(allProperties)];
 
-    // set countries state
-    setProperties(uniqueProperties);
-  }, []);
 
-  const handleClick = () => {
-    setLoading(true);
-    // check the string if includes '(any)'
+  const handleClick = (value) => {
+    setLoading(true)
     const isDefault = (str) => {
       return str.split(' ').includes('(any)');
-    };
+    }
 
-    // get first string (price) and parse it to number
-    const minPrice = parseInt(price.split(' ')[0]);
-    // get last string (price) and parse it to number
-    const maxPrice = parseInt(price.split(' ')[2]);
+    const isDefaultCountry = isDefault(country);
+    const isDefaultProperty = isDefault(property);
+    const isDefaultPrice = isDefault(price);
+    const priceLower = parseInt(price.split('-')[0]);
+    const priceUpper = parseInt(price.split('-')[1]);
+    let newHouseList = housesData.filter(item => {
+      const housePrice = parseInt(item.price);
+      if (item.country === country && item.type === property && (housePrice >= priceLower && housePrice <= priceUpper)) {
+        return item;
+      }
+    })
+    // possible bug here
+    if (isDefaultCountry && isDefaultProperty && isDefaultPrice) {
+      setHouses(housesData);
+      return;
+    } else if(!isDefaultCountry && isDefaultProperty && isDefaultPrice) {
+      newHouseList = housesData.filter(house => house.country  === country)
+    } else if(!isDefaultProperty && !isDefaultCountry && isDefaultPrice) {
+      newHouseList = housesData.filter(house => house.type  === property && house.country  === country)
+    } else if(!isDefaultProperty && isDefaultCountry && isDefaultPrice) {
+      newHouseList = housesData.filter(house => house.type  === property)
+    } else if (!isDefaultPrice && isDefaultProperty && isDefaultCountry) {
+      newHouseList = housesData.filter(house => (parseInt(house.price) >= priceLower && parseInt(house.price) <= priceUpper))
+    } else if (!isDefaultPrice && !isDefaultProperty && isDefaultCountry) {
+      newHouseList = housesData.filter(house => house.country  === country && (parseInt(house.price) >= priceLower && parseInt(house.price) <= priceUpper))
+    } else if (!isDefaultPrice && isDefaultProperty && !isDefaultCountry) {
+      newHouseList = housesData.filter(house => house.type  === property && (parseInt(house.price) >= priceLower && parseInt(house.price) <= priceUpper))
+    }
 
-    const newHouses = housesData.filter((house) => {
-      const housePrice = parseInt(house.price);
-      // all values are selected
-      if (
-        house.country === country &&
-        house.type === property &&
-        housePrice >= minPrice &&
-        housePrice <= maxPrice
-      ) {
-        return house;
-      }
-      // all values are default
-      if (isDefault(country) && isDefault(property) && isDefault(price)) {
-        return house;
-      }
-      // country is not default
-      if (!isDefault(country) && isDefault(property) && isDefault(price)) {
-        return house.country === country;
-      }
-      // property is not default
-      if (!isDefault(property) && isDefault(country) && isDefault(price)) {
-        return house.type === property;
-      }
-      // price is not default
-      if (!isDefault(price) && isDefault(country) && isDefault(property)) {
-        if (housePrice >= minPrice && housePrice <= maxPrice) {
-          return house;
-        }
-      }
-      // country and property is not default
-      if (!isDefault(country) && !isDefault(property) && isDefault(price)) {
-        return house.country === country && house.type === property;
-      }
-      // country and price is not default
-      if (!isDefault(country) && isDefault(property) && !isDefault(price)) {
-        if (housePrice >= minPrice && housePrice <= maxPrice) {
-          return house.country === country;
-        }
-      }
-      // property and price is not default
-      if (isDefault(country) && !isDefault(property) && !isDefault(price)) {
-        if (housePrice >= minPrice && housePrice <= maxPrice) {
-          return house.type === property;
-        }
-      }
-    });
+    setHouses(newHouseList);
+    setLoading(false)
+  }
 
-    // create a showMessage function to render a "Nothing found" message to the screen
-    setTimeout(() => {
-      return (
-        newHouses.length < 1 ? setHouses([]) : setHouses(newHouses),
-        setLoading(false)
-      );
-    }, 1000);
-  };
-
-  return (
-    <HouseContext.Provider
-      value={{
-        country,
-        setCountry,
-        countries,
-        property,
-        setProperty,
-        properties,
-        price,
-        setPrice,
-        handleClick,
-        houses,
-        loading,
-      }}
-    >
-      {children}
-    </HouseContext.Provider>
-  );
+  return <HouseContext.Provider value={{
+    houses, setHouses,
+    country, setCountry,
+    countries, setCountries,
+    property, setProperty,
+    properties, setProperties,
+    price, setPrice,
+    loading, setLoading,
+    handleClick,
+  }}>
+    {children}
+  </HouseContext.Provider>;
 };
 
 export default HouseContextProvider;

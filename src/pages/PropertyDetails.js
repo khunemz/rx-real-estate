@@ -46,15 +46,34 @@ const PropertyDetails = () => {
           </div>
 
           <div className='flex-1 bg-white w-full mb-8 border border-gray-300 rounded-lg px-6 py-8'>
-            <div className='flex items-center gap-x-4'>
-              <div>
+            <div className='flex items-center gap-x-4 mb-8'>
+              <div className='w-20 h-20 p-1 border border-gray-300 rounded-full'>
                 <img src={house.agent.image} alt='' />
               </div>
               <div>
-                <div>{ house.agent.name }</div>
-                <Link to='' clasName="text-violet-700 text-sm">View Listing</Link>
+                <div className='font-bold text-lg'>{ house.agent.name }</div>
+                <Link to='' className="text-gray-500 text-sm">View Listing</Link>
               </div>
             </div>
+
+            <form>
+              <div className='flex flex-col gap-y-1'>
+              <input className='border border-gray-300 focus:border-violet-700 outline-none
+               rounded w-full px-4 h-10 text-sm' type="text" placeholder='Name'/>
+              <input className='border border-gray-300 focus:border-violet-700 outline-none
+               rounded w-full px-4 h-10 text-sm' type="text" placeholder='Email'/>
+              <input className='border border-gray-300 focus:border-violet-700 outline-none
+               rounded w-full px-4 h-10 text-sm' type="text" placeholder='Phone'/>
+              <textarea className='border border-gray-300 focus:border-violet-700 outline-none
+               rounded w-full px-4 h-10 text-sm h-40' type="text" placeholder='Hello, I am interested in [Modern Apartment].'></textarea>
+              <div className='flex gap-x-2'>
+                <button className='bg-violet-700 hover:bg-violet-800 text-white rounded p-x text-sm
+                w-full transition'>Send message</button>
+                <button className='border border-violet-700 text-violet-700 hover:border-violet-500 
+                hover:text-violet-500 rounded p-4 w-full text-sm transition'>Call</button>
+              </div>
+              </div>
+          </form>
           </div>
         </div>
       </div>

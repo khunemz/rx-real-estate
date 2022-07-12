@@ -34,6 +34,7 @@ export const HouseContextProvider = ({ children }) => {
 
 
   const handleClick = (value) => {
+    setLoading(true)
     const isDefault = (str) => {
       return str.split(' ').includes('(any)');
     }
@@ -68,6 +69,7 @@ export const HouseContextProvider = ({ children }) => {
     }
 
     setHouses(newHouseList);
+    setLoading(false)
   }
 
   return <HouseContext.Provider value={{

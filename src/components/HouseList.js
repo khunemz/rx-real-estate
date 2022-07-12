@@ -6,6 +6,14 @@ import House from './House';
 
 const HouseList = () => {
   const { houses, loading } = useContext(HouseContext);
+
+  if (loading) {
+    return <ImSpinner2 className='mx-auto animate-spin text-vioload-700 text-4xl mt-[200px]' />
+  }
+
+  if(houses.length < 1) {
+    return <div className='mx-auto text-center text-3xl text-gray-400 mt-48'>No data to show</div>
+  }
   return (
     <section className='mb-20'>
       <div className='container mx-auto'>
